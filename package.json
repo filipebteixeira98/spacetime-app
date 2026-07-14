@@ -19,7 +19,6 @@
     "expo-system-ui": "~57.0.0",
     "expo-web-browser": "~57.0.0",
     "nativewind": "^4.2.6",
-    "prettier-plugin-tailwindcss": "^0.5.14",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
@@ -35,6 +34,7 @@
     "@rocketseat/eslint-config": "^2.2.2",
     "@types/react": "~19.2.2",
     "eslint": "^8.57.1",
+    "prettier-plugin-tailwindcss": "^0.8.0",
     "typescript": "~6.0.3"
   },
   "scripts": {

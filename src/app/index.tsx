@@ -1,5 +1,6 @@
-import * as AuthSession from 'expo-auth-session'
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { cssInterop } from 'nativewind'
+import { useEffect } from 'react'
 import {
   ImageBackground,
   StatusBar,
@@ -12,18 +13,35 @@ import blurBackground from '../assets/bg-blur.png'
 import Logo from '../assets/nlw-spacetime-logo.svg'
 import Stripes from '../assets/stripes.svg'
 
-const redirectUri = AuthSession.makeRedirectUri({
-  // No proxy parameter here; it will default to your local bundler URL
-})
-
-console.log(redirectUri)
-// Outputs something like: exp://192.168.1.100:8081/--/auth-callback
-
 const StyledStripes = cssInterop(Stripes, {
   className: 'style',
 })
 
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint:
+    'https://github.com/settings/connections/applications/Ov23lixd6blXTgl1UUzl',
+}
+
 export default function HomeScreen() {
+  const [request, response, signInWithGithub] = useAuthRequest(
+    {
+      clientId: 'Ov23lixd6blXTgl1UUzl',
+      scopes: ['identity'],
+      redirectUri: makeRedirectUri({
+        scheme: 'spacetime',
+      }),
+    },
+    discovery,
+  )
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params
+    }
+  }, [response])
+
   return (
     <ImageBackground
       source={blurBackground}
@@ -45,6 +63,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-2"
+          onPress={() => signInWithGithub()}
         >
           <Text className="font-alt text-sm uppercase text-black">
             Set a reminder

@@ -1,3 +1,4 @@
+import * as AuthSession from 'expo-auth-session'
 import { cssInterop } from 'nativewind'
 import {
   ImageBackground,
@@ -10,6 +11,13 @@ import {
 import blurBackground from '../assets/bg-blur.png'
 import Logo from '../assets/nlw-spacetime-logo.svg'
 import Stripes from '../assets/stripes.svg'
+
+const redirectUri = AuthSession.makeRedirectUri({
+  // No proxy parameter here; it will default to your local bundler URL
+})
+
+console.log(redirectUri)
+// Outputs something like: exp://192.168.1.100:8081/--/auth-callback
 
 const StyledStripes = cssInterop(Stripes, {
   className: 'style',

@@ -1,7 +1,9 @@
+import { isAxiosError } from 'axios'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import { useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
 import { cssInterop } from 'nativewind'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import {
   ImageBackground,
   StatusBar,
@@ -43,34 +45,56 @@ export default function HomeScreen() {
     discovery,
   )
 
-  useEffect(() => {
-    if (response?.type === 'success' && request?.codeVerifier) {
-      const { code } = response.params
+  const router = useRouter()
 
+  const handleGithubOAuthCode = useCallback(
+    async (code: string) => {
       if (processedAuthCodeRef.current === code) {
+        return
+      }
+
+      const codeVerifier = request?.codeVerifier
+
+      if (!codeVerifier) {
         return
       }
 
       processedAuthCodeRef.current = code
 
-      api
-        .post('/register', {
+      try {
+        const response = await api.post('/register', {
           code,
-          codeVerifier: request.codeVerifier,
+          codeVerifier,
           redirectUri,
         })
-        .then((response) => {
-          const { token } = response.data
 
-          SecureStore.setItemAsync('token', token)
-        })
-        .catch((error) => {
-          processedAuthCodeRef.current = null
+        const { token } = response.data
 
+        await SecureStore.setItemAsync('token', token)
+
+        router.push('/')
+      } catch (error) {
+        processedAuthCodeRef.current = null
+
+        if (isAxiosError(error)) {
           console.log(error.response?.data ?? error.message)
-        })
+
+          return
+        }
+
+        console.log(error)
+      }
+    },
+    [request?.codeVerifier, router],
+  )
+
+  useEffect(() => {
+    if (response?.type === 'success' && request?.codeVerifier) {
+      const { code } = response.params
+
+      handleGithubOAuthCode(code)
     }
-  }, [request, response])
+  }, [request, response, handleGithubOAuthCode])
 
   return (
     <ImageBackground

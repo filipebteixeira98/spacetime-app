@@ -1,6 +1,6 @@
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { cssInterop } from 'nativewind'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   ImageBackground,
   StatusBar,
@@ -13,8 +13,14 @@ import blurBackground from '../assets/bg-blur.png'
 import Logo from '../assets/nlw-spacetime-logo.svg'
 import Stripes from '../assets/stripes.svg'
 
+import { api } from '../lib/api'
+
 const StyledStripes = cssInterop(Stripes, {
   className: 'style',
+})
+
+const redirectUri = makeRedirectUri({
+  scheme: 'spacetime',
 })
 
 const discovery = {
@@ -25,22 +31,45 @@ const discovery = {
 }
 
 export default function HomeScreen() {
+  const processedAuthCodeRef = useRef<string | null>(null)
+
   const [request, response, signInWithGithub] = useAuthRequest(
     {
       clientId: 'Ov23lixd6blXTgl1UUzl',
       scopes: ['identity'],
-      redirectUri: makeRedirectUri({
-        scheme: 'spacetime',
-      }),
+      redirectUri,
     },
     discovery,
   )
 
   useEffect(() => {
-    if (response?.type === 'success') {
+    if (response?.type === 'success' && request?.codeVerifier) {
       const { code } = response.params
+
+      if (processedAuthCodeRef.current === code) {
+        return
+      }
+
+      processedAuthCodeRef.current = code
+
+      api
+        .post('/register', {
+          code,
+          codeVerifier: request.codeVerifier,
+          redirectUri,
+        })
+        .then((response) => {
+          const { token } = response.data
+
+          console.log(token)
+        })
+        .catch((error) => {
+          processedAuthCodeRef.current = null
+
+          console.log(error.response?.data ?? error.message)
+        })
     }
-  }, [response])
+  }, [request, response])
 
   return (
     <ImageBackground
@@ -63,6 +92,7 @@ export default function HomeScreen() {
         <TouchableOpacity
           activeOpacity={0.7}
           className="rounded-full bg-green-500 px-5 py-2"
+          disabled={!request}
           onPress={() => signInWithGithub()}
         >
           <Text className="font-alt text-sm uppercase text-black">

@@ -72,7 +72,7 @@ export default function HomeScreen() {
 
         await SecureStore.setItemAsync('token', token)
 
-        router.push('/')
+        router.push('/memories')
       } catch (error) {
         processedAuthCodeRef.current = null
 

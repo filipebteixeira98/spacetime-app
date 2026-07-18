@@ -1,4 +1,5 @@
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import * as SecureStore from 'expo-secure-store'
 import { cssInterop } from 'nativewind'
 import { useEffect, useRef } from 'react'
 import {
@@ -61,7 +62,7 @@ export default function HomeScreen() {
         .then((response) => {
           const { token } = response.data
 
-          console.log(token)
+          SecureStore.setItemAsync('token', token)
         })
         .catch((error) => {
           processedAuthCodeRef.current = null

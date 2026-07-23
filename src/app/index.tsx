@@ -2,25 +2,12 @@ import { isAxiosError } from 'axios'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { useRouter } from 'expo-router'
 import * as SecureStore from 'expo-secure-store'
-import { cssInterop } from 'nativewind'
 import { useCallback, useEffect, useRef } from 'react'
-import {
-  ImageBackground,
-  StatusBar,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import { Text, TouchableOpacity, View } from 'react-native'
 
-import blurBackground from '../assets/bg-blur.png'
 import Logo from '../assets/nlw-spacetime-logo.svg'
-import Stripes from '../assets/stripes.svg'
 
 import { api } from '../lib/api'
-
-const StyledStripes = cssInterop(Stripes, {
-  className: 'style',
-})
 
 const redirectUri = makeRedirectUri({
   scheme: 'spacetime',
@@ -97,12 +84,7 @@ export default function HomeScreen() {
   }, [request, response, handleGithubOAuthCode])
 
   return (
-    <ImageBackground
-      source={blurBackground}
-      className="relative flex-1 items-center bg-gray-900 px-8 py-10"
-      imageStyle={{ position: 'absolute', left: '-100%' }}
-    >
-      <StyledStripes className="absolute left-2" />
+    <>
       <View className="flex-1 items-center justify-center gap-6">
         <Logo />
         <View className="space-y-2">
@@ -128,7 +110,6 @@ export default function HomeScreen() {
       <Text className="text-center font-body text-sm leading-relaxed text-gray-200">
         Made with 💕
       </Text>
-      <StatusBar barStyle="light-content" translucent />
-    </ImageBackground>
+    </>
   )
 }

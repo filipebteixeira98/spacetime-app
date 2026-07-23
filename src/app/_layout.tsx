@@ -6,8 +6,17 @@ import {
 } from '@expo-google-fonts/roboto'
 import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
+import { cssInterop } from 'nativewind'
+import { ImageBackground, StatusBar } from 'react-native'
+
+import blurBackground from '../assets/bg-blur.png'
+import Stripes from '../assets/stripes.svg'
 
 import '../global.css'
+
+const StyledStripes = cssInterop(Stripes, {
+  className: 'style',
+})
 
 export default function RootLayout() {
   SplashScreen.preventAutoHideAsync()
@@ -24,5 +33,20 @@ export default function RootLayout() {
 
   SplashScreen.hideAsync()
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return (
+    <ImageBackground
+      source={blurBackground}
+      className="relative flex-1 bg-gray-900 px-8 py-10"
+      imageStyle={{ position: 'absolute', left: '-100%' }}
+    >
+      <StyledStripes className="absolute left-2" />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' },
+        }}
+      />
+      <StatusBar barStyle="light-content" translucent />
+    </ImageBackground>
+  )
 }

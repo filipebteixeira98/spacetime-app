@@ -36,7 +36,7 @@ export default function RootLayout() {
   return (
     <ImageBackground
       source={blurBackground}
-      className="relative flex-1 bg-gray-900 px-8 py-10"
+      className="relative flex-1 bg-gray-900"
       imageStyle={{ position: 'absolute', left: '-100%' }}
     >
       <StyledStripes className="absolute left-2" />

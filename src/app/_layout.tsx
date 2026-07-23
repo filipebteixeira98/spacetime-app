@@ -62,6 +62,7 @@ export default function RootLayout() {
           name="index"
           redirect={isUserAuthenticated ?? undefined}
         />
+        <Stack.Screen name="new" />
         <Stack.Screen name="memories" />
       </Stack>
       <StatusBar barStyle="light-content" translucent />

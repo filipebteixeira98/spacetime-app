@@ -5,8 +5,10 @@ import {
   useFonts,
 } from '@expo-google-fonts/roboto'
 import { Stack } from 'expo-router'
+import * as SecureStore from 'expo-secure-store'
 import * as SplashScreen from 'expo-splash-screen'
 import { cssInterop } from 'nativewind'
+import { useEffect, useState } from 'react'
 import { ImageBackground, StatusBar } from 'react-native'
 
 import blurBackground from '../assets/bg-blur.png'
@@ -19,6 +21,10 @@ const StyledStripes = cssInterop(Stripes, {
 })
 
 export default function RootLayout() {
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState<
+    null | boolean
+  >(null)
+
   SplashScreen.preventAutoHideAsync()
 
   const [hasLoadedFonts] = useFonts({
@@ -26,6 +32,12 @@ export default function RootLayout() {
     Roboto_700Bold,
     BaiJamjuree_700Bold,
   })
+
+  useEffect(() => {
+    SecureStore.getItemAsync('token').then((token) => {
+      setIsUserAuthenticated(!!token)
+    })
+  }, [])
 
   if (!hasLoadedFonts) {
     return null
@@ -45,7 +57,13 @@ export default function RootLayout() {
           headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },
         }}
-      />
+      >
+        <Stack.Screen
+          name="index"
+          redirect={isUserAuthenticated ?? undefined}
+        />
+        <Stack.Screen name="memories" />
+      </Stack>
       <StatusBar barStyle="light-content" translucent />
     </ImageBackground>
   )
